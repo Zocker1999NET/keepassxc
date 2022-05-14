@@ -161,24 +161,45 @@ void DatabaseTabWidget::addDatabaseTab(const QString& filePath,
         return;
     }
 
+    auto* dbWidget = searchDatabaseByFilePath(canonicalFilePath);
+    if (dbWidget) {
+        dbWidget->performUnlockDatabase(password, keyfile);
+        if (!inBackground) {
+            // switch to existing tab if file is already open
+            setCurrentIndex(indexOf(dbWidget));
+        }
+        return;
+    }
+
+    dbWidget = new DatabaseWidget(QSharedPointer<Database>::create(filePath), this);
+    addDatabaseTab(dbWidget, inBackground);
+    dbWidget->performUnlockDatabase(password, keyfile);
+    updateLastDatabases(filePath);
+}
+
+/**
+ * Searches for an open database with the given path.
+ * Returns nullptr if given database is not currently opened.
+ */
+DatabaseWidget* DatabaseTabWidget::searchDatabaseByFilePath(const QString& filePath)
+{
+    QFileInfo fileInfo(filePath);
+    QString canonicalFilePath = fileInfo.canonicalFilePath();
+
+    if (canonicalFilePath.isEmpty()) {
+        // file cannot be accessed / does not exists is considered equal to no tab found
+        return nullptr;
+    }
+
     for (int i = 0, c = count(); i < c; ++i) {
         auto* dbWidget = databaseWidgetFromIndex(i);
         Q_ASSERT(dbWidget);
         if (dbWidget
             && dbWidget->database()->canonicalFilePath().compare(canonicalFilePath, FILE_CASE_SENSITIVE) == 0) {
-            dbWidget->performUnlockDatabase(password, keyfile);
-            if (!inBackground) {
-                // switch to existing tab if file is already open
-                setCurrentIndex(indexOf(dbWidget));
-            }
-            return;
+            return dbWidget;
         }
     }
-
-    auto* dbWidget = new DatabaseWidget(QSharedPointer<Database>::create(filePath), this);
-    addDatabaseTab(dbWidget, inBackground);
-    dbWidget->performUnlockDatabase(password, keyfile);
-    updateLastDatabases(filePath);
+    return nullptr;
 }
 
 /**
