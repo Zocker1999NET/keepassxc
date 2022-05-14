@@ -366,6 +366,21 @@ bool DatabaseTabWidget::closeDatabaseTabFromSender()
 /**
  * Attempt to close a database and remove its tab afterwards.
  *
+ * @param filePath path to file opened in the database tab to close
+ * @return true if database was closed successully
+ */
+bool DatabaseTabWidget::closeDatabaseTab(const QString& filePath, bool considerNotFoundSuccessful)
+{
+    auto* dbWidget = searchDatabaseByFilePath(filePath);
+    if (dbWidget) {
+        return closeDatabaseTab(dbWidget);
+    }
+    return considerNotFoundSuccessful;
+}
+
+/**
+ * Attempt to close a database and remove its tab afterwards.
+ *
  * @param index index of the database tab to close
  * @return true if database was closed successully
  */
@@ -644,6 +659,77 @@ DatabaseWidget* DatabaseTabWidget::databaseWidgetFromIndex(int index) const
 DatabaseWidget* DatabaseTabWidget::currentDatabaseWidget()
 {
     return qobject_cast<DatabaseWidget*>(currentWidget());
+}
+
+/**
+ * Checks if given database is currently opened.
+ * Considers a locked database as opened.
+ *
+ * @param filePath Path to database which should be checked
+ * @return return true if database is currently opened, whether it is locked or not
+ */
+bool DatabaseTabWidget::isDatabaseOpened(const QString& filePath)
+{
+    auto* dbWidget = searchDatabaseByFilePath(filePath);
+    if (dbWidget) {
+        return true;
+    }
+    return false;
+}
+
+/**
+ * Checks if given database is currently locked.
+ *
+ * @param filePath Path to database which should be checked
+ * @return return true if database is currently locked and false if unlocked or not opened
+ */
+bool DatabaseTabWidget::isDatabaseLocked(const QString& filePath)
+{
+    auto* dbWidget = searchDatabaseByFilePath(filePath);
+    if (dbWidget) {
+        return dbWidget->isLocked();
+    }
+    return false;
+}
+
+/**
+ * Checks if given database is currently unlocked.
+ *
+ * @param filePath Path to database which should be checked
+ * @return return true if database is currently unlocked and false if locked or not opened
+ */
+bool DatabaseTabWidget::isDatabaseUnlocked(const QString& filePath)
+{
+    auto* dbWidget = searchDatabaseByFilePath(filePath);
+    if (dbWidget) {
+        return not dbWidget->isLocked();
+    }
+    return false;
+}
+
+/**
+ * Attempt to lock an open database
+ *
+ * @param filePath Path of database to lock
+ * @param considerNotFoundSuccessful if true, this method will return true if database is not opened, otherwise it will
+ * return false
+ * @param considerAlreadyLockedSuccessful if true, this method will return true if database was already locked,
+ * otherwise it will return false
+ * @return return true if database could be locked successfully or if failure considered successful according to given
+ * configuration
+ */
+bool DatabaseTabWidget::lockDatabase(const QString& filePath,
+                                     bool considerNotFoundSuccessful,
+                                     bool considerAlreadyLockedSuccessful)
+{
+    auto* dbWidget = searchDatabaseByFilePath(filePath);
+    if (dbWidget) {
+        if (dbWidget->isLocked()) {
+            return considerAlreadyLockedSuccessful;
+        }
+        return dbWidget->lock();
+    }
+    return considerNotFoundSuccessful;
 }
 
 /**

@@ -1789,9 +1789,75 @@ void MainWindow::dropEvent(QDropEvent* event)
     }
 }
 
+/**
+ * Checks if given database is currently opened.
+ * Considers a locked database as opened.
+ *
+ * @param filePath Path to database which should be checked
+ * @return return true if database is currently opened, whether it is locked or not
+ */
+bool MainWindow::isDatabaseOpened(const QString& filePath)
+{
+    return m_ui->tabWidget->isDatabaseOpened(filePath);
+}
+
+/**
+ * Checks if given database is currently locked.
+ *
+ * @param filePath Path to database which should be checked
+ * @return return true if database is currently locked and false if unlocked or not opened
+ */
+bool MainWindow::isDatabaseLocked(const QString& filePath)
+{
+    return m_ui->tabWidget->isDatabaseLocked(filePath);
+}
+
+/**
+ * Checks if given database is currently unlocked.
+ *
+ * @param filePath Path to database which should be checked
+ * @return return true if database is currently unlocked and false if locked or not opened
+ */
+bool MainWindow::isDatabaseUnlocked(const QString& filePath)
+{
+    return m_ui->tabWidget->isDatabaseUnlocked(filePath);
+}
+
+/**
+ * Attempts to close a database
+ *
+ * @param filePath Path to database which should be closed
+ * @param considerNotFoundSuccessful if true, this method will return true if database is not opened, otherwise it will
+ * return false
+ * @return return true if database could be closed successfully or if failure considered successful according to given
+ * configuration
+ */
+bool MainWindow::closeDatabase(const QString& filePath, bool considerNotFoundSuccessful)
+{
+    return m_ui->tabWidget->closeDatabaseTab(filePath, considerNotFoundSuccessful);
+}
+
 void MainWindow::closeAllDatabases()
 {
     m_ui->tabWidget->closeAllDatabaseTabs();
+}
+
+/**
+ * Attempts to lock a database
+ *
+ * @param filePath Path to database which should be locked
+ * @param considerNotFoundSuccessful if true, this method will return true if database is not opened, otherwise it will
+ * return false
+ * @param considerAlreadyLockedSuccessful if true, this method will return true if database was already locked,
+ * otherwise it will return false
+ * @return return true if database could be locked successfully or if failure considered successful according to given
+ * configuration
+ */
+bool MainWindow::lockDatabase(const QString& filePath,
+                              bool considerNotFoundSuccessful,
+                              bool considerAlreadyLockedSuccessful)
+{
+    return m_ui->tabWidget->lockDatabase(filePath, considerNotFoundSuccessful, considerAlreadyLockedSuccessful);
 }
 
 void MainWindow::lockAllDatabases()

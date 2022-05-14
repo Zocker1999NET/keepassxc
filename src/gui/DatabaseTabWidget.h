@@ -53,6 +53,7 @@ public slots:
                         const QString& keyfile = {});
     void addDatabaseTab(DatabaseWidget* dbWidget, bool inBackground = false);
     DatabaseWidget* searchDatabaseByFilePath(const QString& filePath);
+    bool closeDatabaseTab(const QString& filePath, bool considerNotFoundSuccessful = true);
     bool closeDatabaseTab(int index);
     bool closeDatabaseTab(DatabaseWidget* dbWidget);
     bool closeAllDatabaseTabs();
@@ -72,6 +73,11 @@ public slots:
     void exportToCsv();
     void exportToHtml();
 
+    bool isDatabaseOpened(const QString& filePath);
+    bool isDatabaseLocked(const QString& filePath);
+    bool isDatabaseUnlocked(const QString& filePath);
+
+    bool lockDatabase(const QString& filePath, bool considerNotFoundSuccessful, bool considerAlreadyLockedSuccessful);
     bool lockDatabases();
     void closeDatabaseFromSender();
     void unlockDatabaseInDialog(DatabaseWidget* dbWidget, DatabaseOpenDialog::Intent intent);

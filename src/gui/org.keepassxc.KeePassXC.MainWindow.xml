@@ -13,6 +13,29 @@
     <method name="openDatabase">
       <arg name="fileName" type="s" direction="in"/>
     </method>
+    <method name="isDatabaseOpened">
+      <arg name="fileName" type="s" direction="in"/>
+      <arg name="isOpen" type="b" direction="out"/>
+    </method>
+    <method name="isDatabaseLocked">
+      <arg name="fileName" type="s" direction="in"/>
+      <arg name="isLocked" type="b" direction="out"/>
+    </method>
+    <method name="isDatabaseUnlocked">
+      <arg name="fileName" type="s" direction="in"/>
+      <arg name="isUnlocked" type="b" direction="out"/>
+    </method>
+    <method name="lockDatabase">
+      <arg name="fileName" type="s" direction="in"/>
+      <arg name="considerNotFoundSuccessful" type="b" direction="in"/>
+      <arg name="considerAlreadyLockedSuccessful" type="b" direction="in"/>
+      <arg name="successful" type="b" direction="out"/>
+    </method>
+    <method name="closeDatabase">
+      <arg name="fileName" type="s" direction="in"/>
+      <arg name="considerNotFoundSuccessful" type="b" direction="in"/>
+      <arg name="successful" type="b" direction="out"/>
+    </method>
     <method name="appExit">
     </method>
     <method name="lockAllDatabases">

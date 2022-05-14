@@ -86,7 +86,12 @@ public slots:
     void minimizeOrHide();
     void toggleWindow();
     void bringToFront();
+    bool isDatabaseOpened(const QString& filePath);
+    bool isDatabaseLocked(const QString& filePath);
+    bool isDatabaseUnlocked(const QString& filePath);
+    bool closeDatabase(const QString& filePath, bool considerNotFoundSuccessful);
     void closeAllDatabases();
+    bool lockDatabase(const QString& filePath, bool considerNotFoundSuccessful, bool considerAlreadyLockedSuccessful);
     void lockAllDatabases();
     void closeModalWindow();
     void displayDesktopNotification(const QString& msg, QString title = "", int msTimeoutHint = 10000);
